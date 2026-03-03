@@ -1,4 +1,4 @@
-cloudflare_api_token  = "5d1l9fSALYyEU_IuMwxeAYGUR7j2lqG9p8YRcxYy"
+cloudflare_api_token  = "6ObnjOQ5VBCqNWBkhhC90EWzLOa5gw12peawqE1P"
 cloudflare_account_id = "3db9f93ca967e7636d7447b1136816eb"
 zone_id               = "your-zone-id"
 custom_domain         = "my-todo-list.pages.dev"

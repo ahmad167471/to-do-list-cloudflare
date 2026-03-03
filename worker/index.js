@@ -1,59 +1,75 @@
-const todos = new Map();  // key = id (string), value = {id, text}
-
 export default {
-  async fetch(request, env, ctx) {
-    const url = new URL(request.url);
-    const pathname = url.pathname;
-
-    // CORS headers
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    };
-
-    // Handle OPTIONS (preflight)
-    if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
-    }
-
-    // GET /api → list all todos
-    if (request.method === "GET" && pathname === "/api") {
-      const list = Array.from(todos.values());
-      return Response.json(list, { headers: corsHeaders });
-    }
-
-    // POST /api → create todo
-    if (request.method === "POST" && pathname === "/api") {
-      try {
-        const { text } = await request.json();
-        if (!text || typeof text !== "string" || text.trim() === "") {
-          return new Response("Invalid task", { status: 400, headers: corsHeaders });
-        }
-
-        const id = crypto.randomUUID();
-        const todo = { id, text: text.trim() };
-        todos.set(id, todo);
-
-        return Response.json(todo, {
-          status: 201,
-          headers: corsHeaders,
-        });
-      } catch (err) {
-        return new Response("Bad request", { status: 400, headers: corsHeaders });
-      }
-    }
-
-    // DELETE /api/:id
-    if (request.method === "DELETE" && pathname.startsWith("/api/")) {
-      const id = pathname.slice(5);
-      if (todos.delete(id)) {
-        return new Response(null, { status: 204, headers: corsHeaders });
-      }
-      return new Response("Not found", { status: 404, headers: corsHeaders });
-    }
-
-    // 404 for everything else
-    return new Response("Not found", { status: 404, headers: corsHeaders });
+  async fetch(request, env) {
+    return handleRequest(request, env);
   }
 };
+
+async function handleRequest(request, env) {
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
+
+  // Handle CORS preflight
+  if (request.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    // GET /api → list all todos
+    if (request.method === "GET" && pathname === "/api") {
+      const keys = await env.TODOS_NEW.list(); // get all keys
+      const todos = [];
+
+      for (const keyObj of keys.keys) {
+        const value = await env.TODOS_NEW.get(keyObj.name);
+        if (value) todos.push(JSON.parse(value));
+      }
+
+      return new Response(JSON.stringify(todos), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+
+    // POST /api → create a todo
+    if (request.method === "POST" && pathname === "/api") {
+      const { text } = await request.json();
+      if (!text || typeof text !== "string" || text.trim() === "") {
+        return new Response(JSON.stringify({ error: "Invalid task" }), { status: 400, headers: corsHeaders });
+      }
+
+      const id = crypto.randomUUID();
+      const todo = { id, text: text.trim() };
+      await env.TODOS_NEW.put(id, JSON.stringify(todo));
+
+      return new Response(JSON.stringify(todo), {
+        status: 201,
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+    }
+
+    // DELETE /api/:id → remove a todo
+    if (request.method === "DELETE" && pathname.startsWith("/api/")) {
+      const id = pathname.split("/")[2];
+      const deleted = await env.TODOS_NEW.delete(id);
+
+      if (deleted !== undefined) {
+        return new Response(null, { status: 204, headers: corsHeaders });
+      } else {
+        return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers: corsHeaders });
+      }
+    }
+
+    return new Response(JSON.stringify({ error: "Not found" }), { status: 404, headers: corsHeaders });
+
+  } catch (err) {
+    return new Response(JSON.stringify({ error: "Server error", details: err.message }), {
+      status: 500,
+      headers: corsHeaders
+    });
+  }
+}
