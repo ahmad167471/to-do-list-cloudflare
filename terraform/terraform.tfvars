@@ -1,0 +1,6 @@
+cloudflare_api_token  = "5d1l9fSALYyEU_IuMwxeAYGUR7j2lqG9p8YRcxYy"
+cloudflare_account_id = "3db9f93ca967e7636d7447b1136816eb"
+zone_id               = "your-zone-id"
+custom_domain         = "my-todo-list.pages.dev"
+github_repo_owner     = "ahmad167471"
+github_repo_name      = "to-do-list-cloudflare"
