@@ -1,0 +1,26 @@
+# Node / frontend
+node_modules/
+dist/
+.env
+*.log
+
+# Worker / Cloudflare
+worker/.wrangler/
+worker/wrangler.toml
+.wrangler/
+
+# Terraform
+terraform/terraform.tfvars
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/.terraform/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
