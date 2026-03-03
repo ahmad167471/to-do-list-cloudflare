@@ -4,7 +4,7 @@ A full-stack To-Do List web application that demonstrates **frontend UI**, **Clo
 
 ---
 
-## 🌟 Goal
+## Goal
 
 The goal of this project is to create a simple and interactive To-Do List application with a responsive frontend and a cloud-based backend, while learning:
 
@@ -14,7 +14,7 @@ The goal of this project is to create a simple and interactive To-Do List applic
 
 ---
 
-## 🛠️ Features
+## Features
 
 - Add, delete, and view tasks
 - Persistent storage using Cloudflare Workers KV
@@ -24,7 +24,7 @@ The goal of this project is to create a simple and interactive To-Do List applic
 
 ---
 
-## 🗂 Project Structure
+## Project Structure
 ```.
 ├── frontend/
 │ ├── index.html
@@ -42,7 +42,7 @@ The goal of this project is to create a simple and interactive To-Do List applic
 
 ---
 
-## ⚡ Backend (Cloudflare Worker)
+##  Backend (Cloudflare Worker)
 
 The backend is implemented using **Cloudflare Workers** with KV storage:
 
@@ -54,11 +54,11 @@ The backend is implemented using **Cloudflare Workers** with KV storage:
 - **CORS enabled** for frontend integration.
 - KV namespace binding required (`TODOS_NEW`).
 
-> ⚠️ **Backend Issue**: Initially, there was an error in the KV binding due to invalid namespace ID format. The KV namespace was recreated and properly bound to the worker.
+>  **Backend Issue**: Initially, there was an error in the KV binding due to invalid namespace ID format. The KV namespace was recreated and properly bound to the worker.
 
 ---
 
-## 🖥 Frontend
+## Frontend
 
 - Built using vanilla HTML, CSS, and JS
 - Connects to Worker backend via `fetch` API
